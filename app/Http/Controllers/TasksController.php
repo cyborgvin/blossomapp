@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Task;
 
 use Illuminate\Http\Request;
-
+use App\Models\Task;
 
 class TasksController extends Controller
 {
@@ -25,9 +24,9 @@ class TasksController extends Controller
         ]);
     	$task = new Task();
     	$task->description = $request->description;
-    	$task->user_id = Auth::id();
+    	$task->user_id = auth()->user()->id;
     	$task->save();
-    	return redirect('/');
+    	return redirect('/dashboard');
     }
 
     public function edit(Task $task)
@@ -46,7 +45,7 @@ class TasksController extends Controller
     {
     	if(isset($_POST['delete'])) {
     		$task->delete();
-    		return redirect('/');
+    		return redirect('/dashboard');
     	}
     	else
     	{
@@ -55,21 +54,7 @@ class TasksController extends Controller
             ]);
     		$task->description = $request->description;
 	    	$task->save();
-	    	return redirect('/');
+	    	return redirect('/dashboard');
     	}
     }
 }
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::middleware(['auth:sanctum', 'verified'])->group(function(){
-    Route::get('/dashboard',[TasksController::class, 'index'])->name('dashboard');
-
-    Route::get('/task',[TasksController::class, 'add']);
-    Route::post('/task',[TasksController::class, 'create']);
-
-    Route::get('/task/{task}', [TasksController::class, 'edit']);
-    Route::post('/task/{task}', [TasksController::class, 'update']);
-});
